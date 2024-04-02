@@ -2,6 +2,8 @@ import torch
 from torch.utils.data import Dataset
 import os
 import cv2
+import glob
+import numpy as np
 
 class AiptasiaDataset(Dataset):
     def __init__(self, root_dir):
@@ -17,11 +19,30 @@ class AiptasiaDataset(Dataset):
         return len(self.samples)
     
     def __getitem__(self, idx):
-        image_path = os.path.join(self.root_dir, f'image_{idx}.jpg')
-        label_path = os.path.join(self.root_dir, f'label_{idx}.jpg')
+        folder_path = self.root_dir + str(idx)
+
+        jpg_file_paths = glob.glob(f'{folder_path}/*.jpg')
+
+        image_path = ""
+        label_path = ""
+
+        for i in jpg_file_paths:
+            if i[0] == "I":
+                image_path = i
+            if i[0] == "L":
+                label_path = i
 
         image = cv2.imread(image_path)
         label = cv2.imread(label_path)
+
+        print(f'image shape: {image.shape}')
+        print(f'label shape: {label.shape}')
+
+        print(np.min(image))
+        print(np.min(label))
+
+        print(np.max(image))
+        print(np.max(label))
 
         # Normalize Image and Label inforamtion
         image = image / 255
