@@ -1,15 +1,11 @@
 import torch.nn as nn
-from .layer import Encoder, Decoder
+from .layer import Encoder, Decoder, Bottle
 
 class UNet(nn.Module):
     def __init__(self, in_channels, conv_kernel_size, complex):
         super(UNet, self).__init__()
         self.encoder = Encoder(in_channels, conv_kernel_size, complex)
-        self.bottleneck = nn.Sequential(
-            nn.Conv2d(complex * (2 ** 3), complex * (2 ** 4), conv_kernel_size),
-            nn.Conv2d(complex * (2 ** 4), complex * (2 ** 4), conv_kernel_size),
-            nn.BatchNorm2d(complex * (2 ** 4))
-        )
+        self.bottleneck = Bottle(conv_kernel_size, complex)
         self.decoder = Decoder(conv_kernel_size, complex)
         self.last_conv = nn.Conv2d(complex, 1, 1)
         self.last_sigm = nn.Sigmoid()

@@ -4,6 +4,8 @@ import os
 import cv2
 import glob
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 
 class AiptasiaDataset(Dataset):
     def __init__(self, root_dir):
@@ -19,33 +21,31 @@ class AiptasiaDataset(Dataset):
         return len(self.samples)
     
     def __getitem__(self, idx):
-        folder_path = self.root_dir + str(idx)
+        folder_path = self.root_dir + "/"+ str(idx+1)
 
-        jpg_file_paths = glob.glob(f'{folder_path}/*.jpg')
+        jpg_file_paths = [f for f in os.listdir(folder_path) if f.endswith('.jpg')]
 
         image_path = ""
         label_path = ""
 
         for i in jpg_file_paths:
             if i[0] == "I":
-                image_path = i
-            if i[0] == "L":
-                label_path = i
+                image_path = folder_path + '\\' + i
+            if i[0] == "l":
+                label_path = folder_path + '\\' + i
 
         image = cv2.imread(image_path)
-        label = cv2.imread(label_path)
+        # Load label as grayscale
+        label = cv2.imread(label_path, cv2.IMREAD_GRAYSCALE)
 
-        print(f'image shape: {image.shape}')
-        print(f'label shape: {label.shape}')
-
-        print(np.min(image))
-        print(np.min(label))
-
-        print(np.max(image))
-        print(np.max(label))
-
-        # Normalize Image and Label inforamtion
         image = image / 255
-        label = label / 255
+        label[label < 50] = 0
+        label[label > 200] = 1
 
-        return image, label
+        torch_image = torch.from_numpy(image)
+        torch_image = torch_image.permute(2,0,1)
+
+        torch_label = torch.from_numpy(label)
+        torch_label = torch_label.unsqueeze(0)
+
+        return torch_image.float(), torch_label.float()
