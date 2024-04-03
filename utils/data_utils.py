@@ -2,7 +2,6 @@ import torch
 from torch.utils.data import Dataset
 import os
 import cv2
-import glob
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -28,11 +27,14 @@ class AiptasiaDataset(Dataset):
         image_path = ""
         label_path = ""
 
+        # Colab, '/'
+        # Windows, '\\'
+
         for i in jpg_file_paths:
             if i[0] == "I":
-                image_path = folder_path + '\\' + i
+                image_path = folder_path + '/' + i
             if i[0] == "l":
-                label_path = folder_path + '\\' + i
+                label_path = folder_path + '/' + i
 
         image = cv2.imread(image_path)
         # Load label as grayscale
