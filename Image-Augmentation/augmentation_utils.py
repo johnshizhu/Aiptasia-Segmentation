@@ -6,18 +6,15 @@ Functions used for Aiptasia Image Augmentation
 '''
 
 import cv2
-import numpy as np
 
-def image_rotate_180(image):
-    return cv2.rotate(image, cv2.ROTATE_180)
+def augmentation_v1(image):
+  rotated_image = cv2.rotate(image, cv2.ROTATE_180)
 
-def image_flip(image):
-    return cv2.flip(image, 1)
+  mirrored_image = cv2.flip(image, 1)
 
-def label_rotate_180():
-    pass
+  rotated_then_mirrored_image = cv2.flip(rotated_image, 1)
 
-def label_flip():
-    pass
+  return rotated_image, mirrored_image, rotated_then_mirrored_image
+
 
 
